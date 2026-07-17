@@ -1,0 +1,125 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum SaleStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum WithdrawalStatus {
+  PENDING
+  SUCCESS
+  FAILED
+  CANCELLED
+  REJECTED
+}
+
+enum LedgerType {
+  ADVANCE_PAYOUT
+  FINAL_PAYOUT
+  REJECTED_ADJUSTMENT
+  WITHDRAWAL
+  FAILED_RECOVERY
+}
+
+model User {
+  id String @id @default(uuid())
+
+  username String @unique
+  email    String @unique
+
+  sales         Sale[]
+  withdrawals   Withdrawal[]
+  ledgerEntries Ledger[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Sale {
+  id String @id @default(uuid())
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
+  brand String
+
+  status SaleStatus @default(PENDING)
+
+  earning Decimal @db.Decimal(10, 2)
+
+  advancePaid Boolean @default(false)
+
+  advanceAmount Decimal @default(0.00) @db.Decimal(10, 2)
+
+  reconciledAt DateTime?
+
+  ledgerEntries Ledger[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([status])
+  @@index([advancePaid])
+}
+
+model Ledger {
+  id String @id @default(uuid())
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
+  saleId String?
+  sale   Sale?   @relation(fields: [saleId], references: [id])
+
+  withdrawalId String?
+  withdrawal   Withdrawal? @relation(fields: [withdrawalId], references: [id])
+
+  type LedgerType
+
+  amount Decimal @db.Decimal(10, 2)
+
+  description String?
+
+  idempotencyKey String? @unique
+
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([saleId])
+  @@index([withdrawalId])
+}
+
+model Withdrawal {
+  id String @id @default(uuid())
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
+  amount Decimal @db.Decimal(10, 2)
+
+  status WithdrawalStatus @default(PENDING)
+
+  processedAt DateTime?
+
+  ledgerEntries Ledger[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([createdAt])
+}
