@@ -21,8 +21,8 @@ class SaleRepository {
             },
         });
     }
-    async update(id, data) {
-        return prisma.sale.update({
+    async update(id, data, db = prisma) {
+        return db.sale.update({
             where: { id },
             data,
         });
