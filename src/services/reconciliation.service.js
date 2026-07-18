@@ -17,7 +17,7 @@ class ReconciliationService {
         const ledgerType =
             status === "APPROVED"
                 ? "FINAL_PAYOUT"
-                : "ADVANCE_REVERSAL";
+                : "REJECTED_ADJUSTMENT";
 
         const existing = await ledgerRepository.findBySaleAndType(
             sale.id,
@@ -49,7 +49,7 @@ class ReconciliationService {
                         {
                             userId: sale.userId,
                             saleId: sale.id,
-                            type: "ADVANCE_REVERSAL",
+                            type: "REJECTED_ADJUSTMENT",
                             amount: -Number(sale.advanceAmount),
                             description: "Advance payout reversal",
                         },
