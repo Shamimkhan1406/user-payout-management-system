@@ -21,6 +21,12 @@ class SaleRepository {
             },
         });
     }
+    async update(id, data) {
+        return prisma.sale.update({
+            where: { id },
+            data,
+        });
+    }
 }
 
 module.exports = new SaleRepository();
