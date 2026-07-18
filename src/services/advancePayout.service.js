@@ -1,6 +1,7 @@
 const prisma = require("../config/prisma");
 const saleRepository = require("../repositories/sale.repository");
 const ledgerRepository = require("../repositories/ledger.repository");
+const { LedgerType } = require("@prisma/client");
 
 class AdvancePayoutService {
     async processAdvancePayouts() {
@@ -36,7 +37,7 @@ class AdvancePayoutService {
                 {
                     userId: sale.userId,
                     saleId: sale.id,
-                    type: "ADVANCE_PAYOUT",
+                    type: LedgerType.ADVANCE_PAYOUT,
                     amount: advanceAmount,
                     description: "10% advance payout",
                     idempotencyKey,
