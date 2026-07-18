@@ -27,6 +27,20 @@ class SaleRepository {
             data,
         });
     }
+    async findById(id) {
+        return prisma.sale.findUnique({
+            where: { id },
+        });
+    }
+    async reconcileSale(id, status, db = prisma) {
+        return db.sale.update({
+            where: { id },
+            data: {
+                status,
+                reconciledAt: new Date(),
+            },
+        });
+    }
 }
 
 module.exports = new SaleRepository();
