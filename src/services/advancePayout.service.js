@@ -7,8 +7,6 @@ class AdvancePayoutService {
     async processAdvancePayouts() {
         const sales = await saleRepository.findEligibleSales();
 
-        console.log("Eligible Sales:", sales);
-
         let processed = 0;
 
         for (const sale of sales) {

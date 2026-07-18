@@ -1,12 +1,9 @@
 const saleRepository = require("../repositories/sale.repository");
-const prisma = require("../config/prisma");
+const userRepository = require("../repositories/user.repository");
 
 class SaleService {
   async createSale({ userId, brand, earning }) {
-    // Check user exists
-    const user = await prisma.user.findUnique({
-      where: { id: userId },
-    });
+    const user = await userRepository.findById(userId);
 
     if (!user) {
       throw new Error("User not found");

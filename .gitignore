@@ -1,4 +1,16 @@
-node_modules
+# Environment files
 .env
-coverage
-/generated/prisma
+.env.test
+.env.local
+
+# Node modules
+node_modules/
+
+# Logs
+*.log
+
+# Coverage
+coverage/
+
+# OS files
+.DS_Store
