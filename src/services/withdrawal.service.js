@@ -55,6 +55,54 @@ class WithdrawalService {
             return withdrawal;
         });
     }
+    async updateWithdrawalStatus(id, status) {
+        const withdrawal =
+            await withdrawalRepository.findById(id);
+
+        if (!withdrawal) {
+            throw new Error("Withdrawal not found");
+        }
+
+        if (withdrawal.status !== "PENDING") {
+            throw new Error("Withdrawal already processed");
+        }
+
+        await prisma.$transaction(async (tx) => {
+            await withdrawalRepository.update(
+                id,
+                {
+                    status,
+                    processedAt: new Date(),
+                },
+                tx
+            );
+
+            if (
+                ["FAILED", "CANCELLED", "REJECTED"].includes(status)
+            ) {
+                const recovery =
+                    await withdrawalRepository.findRecoveryEntry(id);
+
+                if (!recovery) {
+                    await ledgerRepository.create(
+                        {
+                            userId: withdrawal.userId,
+                            withdrawalId: withdrawal.id,
+                            type: "FAILED_RECOVERY",
+                            amount: withdrawal.amount,
+                            description:
+                                "Withdrawal recovery",
+                        },
+                        tx
+                    );
+                }
+            }
+        });
+
+        return {
+            message: `Withdrawal marked as ${status}`,
+        };
+    }
 }
 
 module.exports = new WithdrawalService();

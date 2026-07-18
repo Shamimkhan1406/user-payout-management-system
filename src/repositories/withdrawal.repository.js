@@ -28,6 +28,14 @@ class WithdrawalRepository {
             data,
         });
     }
+    async findRecoveryEntry(withdrawalId) {
+        return prisma.ledger.findFirst({
+            where: {
+                withdrawalId,
+                type: "FAILED_RECOVERY",
+            },
+        });
+    }
 }
 
 module.exports = new WithdrawalRepository();
