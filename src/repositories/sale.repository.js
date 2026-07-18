@@ -1,4 +1,5 @@
 const prisma = require("../config/prisma");
+const { SaleStatus } = require("@prisma/client");
 
 class SaleRepository {
     async create(data) {
@@ -16,7 +17,7 @@ class SaleRepository {
     async findEligibleSales() {
         return prisma.sale.findMany({
             where: {
-                status: "PENDING",
+                status: SaleStatus.PENDING,
                 advancePaid: false,
             },
         });
@@ -27,11 +28,7 @@ class SaleRepository {
             data,
         });
     }
-    async findById(id) {
-        return prisma.sale.findUnique({
-            where: { id },
-        });
-    }
+
     async reconcileSale(id, status, db = prisma) {
         return db.sale.update({
             where: { id },
