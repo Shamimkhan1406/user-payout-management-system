@@ -1,0 +1,67 @@
+{
+  "info": {
+    "_postman_id": "a17b88e4-b1ce-4453-9f97-943abcf6a04f",
+    "name": "LLD",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "52821953",
+    "_collection_link": "https://go.postman.co/collection/52821953-a17b88e4-b1ce-4453-9f97-943abcf6a04f?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "test",
+      "request": {
+        "method": "GET",
+        "header": []
+      },
+      "response": []
+    },
+    {
+      "name": "test2",
+      "request": {
+        "method": "POST",
+        "header": []
+      },
+      "response": []
+    },
+    {
+      "name": "sale",
+      "request": {
+        "method": "POST",
+        "header": []
+      },
+      "response": []
+    },
+    {
+      "name": "advancePayout",
+      "request": {
+        "method": "POST",
+        "header": []
+      },
+      "response": []
+    },
+    {
+      "name": "approve sale",
+      "request": {
+        "method": "POST",
+        "header": []
+      },
+      "response": []
+    },
+    {
+      "name": "withdrawals",
+      "request": {
+        "method": "POST",
+        "header": []
+      },
+      "response": []
+    },
+    {
+      "name": "withdrawals Status",
+      "request": {
+        "method": "PATCH",
+        "header": []
+      },
+      "response": []
+    }
+  ]
+}
