@@ -22,6 +22,19 @@ class LedgerRepository {
             },
         });
     }
+    async getUserBalance(userId) {
+        const entries = await prisma.ledger.findMany({
+            where: { userId },
+            select: {
+                amount: true,
+            },
+        });
+
+        return entries.reduce(
+            (sum, entry) => sum + Number(entry.amount),
+            0
+        );
+    }
 }
 
 module.exports = new LedgerRepository();
