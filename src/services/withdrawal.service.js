@@ -1,6 +1,10 @@
 const prisma = require("../config/prisma");
 const ledgerRepository = require("../repositories/ledger.repository");
 const withdrawalRepository = require("../repositories/withdrawal.repository");
+const {
+    WithdrawalStatus,
+    LedgerType,
+} = require("@prisma/client");
 
 class WithdrawalService {
     async createWithdrawal({ userId, amount }) {
@@ -36,7 +40,7 @@ class WithdrawalService {
                     {
                         userId,
                         amount,
-                        status: "PENDING",
+                        status: WithdrawalStatus.PENDING,
                     },
                     tx
                 );
@@ -45,7 +49,7 @@ class WithdrawalService {
                 {
                     userId,
                     withdrawalId: withdrawal.id,
-                    type: "WITHDRAWAL",
+                    type: LedgerType.WITHDRAWAL,
                     amount: -amount,
                     description: "Withdrawal request",
                 },
@@ -63,7 +67,7 @@ class WithdrawalService {
             throw new Error("Withdrawal not found");
         }
 
-        if (withdrawal.status !== "PENDING") {
+        if (withdrawal.status !== WithdrawalStatus.PENDING) {
             throw new Error("Withdrawal already processed");
         }
 
@@ -78,7 +82,11 @@ class WithdrawalService {
             );
 
             if (
-                ["FAILED", "CANCELLED", "REJECTED"].includes(status)
+                [
+                    WithdrawalStatus.FAILED,
+                    WithdrawalStatus.CANCELLED,
+                    WithdrawalStatus.REJECTED,
+                ].includes(status)
             ) {
                 const recovery =
                     await withdrawalRepository.findRecoveryEntry(id);
@@ -88,7 +96,7 @@ class WithdrawalService {
                         {
                             userId: withdrawal.userId,
                             withdrawalId: withdrawal.id,
-                            type: "FAILED_RECOVERY",
+                            type: LedgerType.FAILED_RECOVERY,
                             amount: withdrawal.amount,
                             description:
                                 "Withdrawal recovery",
