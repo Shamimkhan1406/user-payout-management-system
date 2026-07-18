@@ -4,6 +4,7 @@ const userRoutes = require("./user.routes");
 const saleRoutes = require("./sale.routes");
 const jobRoutes = require("./job.routes");
 const reconciliationRoutes = require("./reconciliation.routes");
+const withdrawalRoutes = require("./withdrawal.routes");
 
 
 const router = express.Router();
@@ -19,6 +20,7 @@ router.use("/users", userRoutes);
 router.use("/sales", saleRoutes);
 router.use("/jobs", jobRoutes);
 router.use("/reconciliation", reconciliationRoutes);
+router.use("/withdrawals", withdrawalRoutes);
 
 
 module.exports = router;
