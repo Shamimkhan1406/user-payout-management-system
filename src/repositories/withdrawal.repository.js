@@ -1,4 +1,5 @@
 const prisma = require("../config/prisma");
+const { LedgerType } = require("@prisma/client");
 
 class WithdrawalRepository {
     async create(data, db = prisma) {
@@ -32,7 +33,7 @@ class WithdrawalRepository {
         return prisma.ledger.findFirst({
             where: {
                 withdrawalId,
-                type: "FAILED_RECOVERY",
+                type: LedgerType.FAILED_RECOVERY,
             },
         });
     }
