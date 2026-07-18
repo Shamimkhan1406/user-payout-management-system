@@ -1,6 +1,10 @@
 const prisma = require("../config/prisma");
 const saleRepository = require("../repositories/sale.repository");
 const ledgerRepository = require("../repositories/ledger.repository");
+const {
+    SaleStatus,
+    LedgerType,
+} = require("@prisma/client");
 
 class ReconciliationService {
     async reconcileSale({ saleId, status }) {
@@ -10,14 +14,14 @@ class ReconciliationService {
             throw new Error("Sale not found");
         }
 
-        if (sale.status !== "PENDING") {
+        if (sale.status !== SaleStatus.PENDING) {
             throw new Error("Sale has already been reconciled");
         }
 
         const ledgerType =
-            status === "APPROVED"
-                ? "FINAL_PAYOUT"
-                : "REJECTED_ADJUSTMENT";
+            status === SaleStatus.APPROVED
+                ? LedgerType.FINAL_PAYOUT
+                : LedgerType.REJECTED_ADJUSTMENT;
 
         const existing = await ledgerRepository.findBySaleAndType(
             sale.id,
@@ -29,7 +33,7 @@ class ReconciliationService {
         }
 
         await prisma.$transaction(async (tx) => {
-            if (status === "APPROVED") {
+            if (status === SaleStatus.APPROVED) {
                 const finalAmount =
                     Number(sale.earning) - Number(sale.advanceAmount);
 
@@ -37,7 +41,7 @@ class ReconciliationService {
                     {
                         userId: sale.userId,
                         saleId: sale.id,
-                        type: "FINAL_PAYOUT",
+                        type: LedgerType.FINAL_PAYOUT,
                         amount: finalAmount,
                         description: "Final payout after reconciliation",
                     },
@@ -49,7 +53,7 @@ class ReconciliationService {
                         {
                             userId: sale.userId,
                             saleId: sale.id,
-                            type: "REJECTED_ADJUSTMENT",
+                            type: LedgerType.REJECTED_ADJUSTMENT,
                             amount: -Number(sale.advanceAmount),
                             description: "Advance payout reversal",
                         },
